@@ -1,24 +1,41 @@
 import os
 import requests
 import feedparser
-from bs4 import BeautifulSoup
-from requests.auth import HTTPBasicAuth
 import google.generativeai as genai
 
-GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
+from bs4 import BeautifulSoup
+from requests.auth import HTTPBasicAuth
 
-WP_URL = os.getenv("WP_URL")
-WP_USERNAME = os.getenv("WP_USERNAME")
-WP_PASSWORD = os.getenv("WP_APPLICATION_PASSWORD")
+# =========================
+# GEMINI CONFIG
+# =========================
+
+GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 
 genai.configure(api_key=GEMINI_API_KEY)
 
 model = genai.GenerativeModel("gemini-1.5-flash")
 
+# =========================
+# WORDPRESS CONFIG
+# =========================
+
+WP_URL = os.getenv("WP_URL")
+WP_USERNAME = os.getenv("WP_USERNAME")
+WP_PASSWORD = os.getenv("WP_APPLICATION_PASSWORD")
+
+# =========================
+# RSS FEEDS
+# =========================
+
 RSS_FEEDS = [
     "https://vnexpress.net/rss/kinh-doanh.rss",
-    "https://cafebiz.vn/thi-truong.rss"
+    "https://cafebiz.vn/thi-truong.rss",
 ]
+
+# =========================
+# KEYWORDS
+# =========================
 
 KEYWORDS = [
     "kinh doanh",
@@ -28,9 +45,16 @@ KEYWORDS = [
     "xây dựng",
     "suất ăn",
     "khu công nghiệp",
+    "logistics",
+    "đầu tư",
 ]
 
+# =========================
+# FILTER KEYWORD
+# =========================
+
 def keyword_match(title):
+
     title = title.lower()
 
     for keyword in KEYWORDS:
@@ -39,20 +63,25 @@ def keyword_match(title):
 
     return False
 
+# =========================
+# AI REWRITE
+# =========================
+
 def rewrite_article(content):
 
     prompt = f"""
-    Bạn là chuyên gia business content.
+    Bạn là chuyên gia business content và SEO.
 
     Hãy viết lại bài viết dưới đây theo phong cách:
 
     - chuyên nghiệp
     - magazine news
+    - business insight
     - có góc nhìn phân tích
-    - giọng văn thương hiệu cá nhân Giang Đặng
+    - mang thương hiệu cá nhân Giang Đặng
     - chuẩn SEO
     - có tiêu đề hấp dẫn
-    - có các heading
+    - có heading H2
     - có kết luận
 
     Cuối bài:
@@ -65,17 +94,13 @@ def rewrite_article(content):
     {content[:6000]}
     """
 
-    response = client.chat.completions.create(
-        model="gpt-4.1-mini",
-        messages=[
-            {
-                "role": "user",
-                "content": prompt
-            }
-        ]
-    )
+    response = model.generate_content(prompt)
 
-    return response.choices[0].message.content
+    return response.text
+
+# =========================
+# WORDPRESS PUBLISH
+# =========================
 
 def publish_post(title, content):
 
@@ -95,6 +120,10 @@ def publish_post(title, content):
 
     print(response.text)
 
+# =========================
+# MAIN
+# =========================
+
 posted = 0
 
 for rss in RSS_FEEDS:
@@ -113,18 +142,24 @@ for rss in RSS_FEEDS:
 
         print(f"Đang xử lý: {title}")
 
-        article = requests.get(entry.link)
+        try:
 
-        soup = BeautifulSoup(article.text, "html.parser")
+            article = requests.get(entry.link)
 
-        paragraphs = soup.find_all("p")
+            soup = BeautifulSoup(article.text, "html.parser")
 
-        content = "\n".join([p.get_text() for p in paragraphs])
+            paragraphs = soup.find_all("p")
 
-        rewritten = rewrite_article(content)
+            content = "\n".join([p.get_text() for p in paragraphs])
 
-        publish_post(title, rewritten)
+            rewritten = rewrite_article(content)
 
-        posted += 1
+            publish_post(title, rewritten)
+
+            posted += 1
+
+        except Exception as e:
+
+            print("Lỗi:", e)
 
 print("DONE")
