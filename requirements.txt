@@ -8,3 +8,4 @@ python-slugify
 newspaper3k
 lxml
 google-generativeai
+openai
