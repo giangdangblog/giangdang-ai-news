@@ -108,7 +108,7 @@ def rewrite_article(content):
     """
 
     response = client.chat.completions.create(
-        model="meta-llama/llama-3.1-8b-instruct:free",
+        model="google/gemma-2-9b-it:free",
         messages=[
             {
                 "role": "user",
