@@ -3,15 +3,17 @@ import requests
 import feedparser
 from bs4 import BeautifulSoup
 from requests.auth import HTTPBasicAuth
-from openai import OpenAI
+import google.generativeai as genai
 
-OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
+GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 
 WP_URL = os.getenv("WP_URL")
 WP_USERNAME = os.getenv("WP_USERNAME")
 WP_PASSWORD = os.getenv("WP_APPLICATION_PASSWORD")
 
-client = OpenAI(api_key=OPENAI_API_KEY)
+genai.configure(api_key=GEMINI_API_KEY)
+
+model = genai.GenerativeModel("gemini-1.5-flash")
 
 RSS_FEEDS = [
     "https://vnexpress.net/rss/kinh-doanh.rss",
