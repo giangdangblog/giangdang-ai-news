@@ -1,0 +1,9 @@
+requests
+beautifulsoup4
+feedparser
+openai
+python-dotenv
+Pillow
+python-slugify
+newspaper3k
+lxml
