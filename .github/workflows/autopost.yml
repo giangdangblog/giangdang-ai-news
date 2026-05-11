@@ -12,7 +12,7 @@ jobs:
     runs-on: ubuntu-latest
 
     env:
-      GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+      OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
       WP_URL: ${{ secrets.WP_URL }}
       WP_USERNAME: ${{ secrets.WP_USERNAME }}
       WP_APPLICATION_PASSWORD: ${{ secrets.WP_APPLICATION_PASSWORD }}
