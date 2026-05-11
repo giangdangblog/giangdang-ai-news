@@ -11,12 +11,50 @@ jobs:
   build:
     runs-on: ubuntu-latest
 
+    env:
+      OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+      WP_URL: ${{ secrets.WP_URL }}
+      WP_USERNAME: ${{ secrets.WP_USERNAME }}
+      WP_APPLICATION_PASSWORD: ${{ secrets.WP_APPLICATION_PASSWORD }}
+
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Setup Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Run App
+        run: python app.pyname: Auto Post News
+
+on:
+  schedule:
+    - cron: '0 0 * * *'
+    - cron: '0 10 * * *'
+
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    env:
+      OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+      WP_URL: ${{ secrets.WP_URL }}
+      WP_USERNAME: ${{ secrets.WP_USERNAME }}
+      WP_APPLICATION_PASSWORD: ${{ secrets.WP_APPLICATION_PASSWORD }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
         with:
           python-version: '3.11'
 
