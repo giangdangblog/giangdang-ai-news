@@ -7,3 +7,4 @@ Pillow
 python-slugify
 newspaper3k
 lxml
+google-generativeai
